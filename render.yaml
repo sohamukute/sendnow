@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: sendnow-server
+    runtime: node
+    region: oregon
+    plan: free
+    buildCommand: cd server && bun install && bun run build
+    startCommand: cd server && bun run start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: UPSTASH_REDIS_REST_URL
+        sync: false
+      - key: UPSTASH_REDIS_REST_TOKEN
+        sync: false
+      - key: METERED_API_KEY
+        sync: false
+      - key: METERED_DOMAIN
+        sync: false
+      - key: TURN_SECRET
+        sync: false
+      - key: CLIENT_URL
+        sync: false
