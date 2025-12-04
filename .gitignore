@@ -1,14 +1,14 @@
 node_modules/
 dist/
 .env
-*.local
+.env.local
 
-# Bun
+# Bun cache
 .bun/
-bun.lock
 
-# Vite
-client/.vite/
+# Vite cache
+.vite/
+client/node_modules/.vite/
 
 # OS
 .DS_Store
