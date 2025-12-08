@@ -1,0 +1,12 @@
+[build]
+builder = "nixpacks"
+buildCommand = "cd server && bun install"
+
+[deploy]
+startCommand = "cd server && bun src/index.ts"
+healthcheckPath = "/api/health"
+healthcheckTimeout = 30
+restartPolicyType = "always"
+
+[[services]]
+name = "sendnow-server"

@@ -1,0 +1,11 @@
+[phases.setup]
+nixPkgs = ["bun"]
+
+[phases.install]
+cmds = ["cd server && bun install"]
+
+[phases.build]
+cmds = []
+
+[start]
+cmd = "cd server && bun src/index.ts"
