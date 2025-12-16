@@ -47,8 +47,6 @@ export const SignalMessageSchema = z.discriminatedUnion('type', [
 export const EnvSchema = z.object({
   UPSTASH_REDIS_REST_URL: z.string().url(),
   UPSTASH_REDIS_REST_TOKEN: z.string().min(1),
-  METERED_API_KEY: z.string().min(1),
-  METERED_DOMAIN: z.string().min(1),
   TURN_SECRET: z.string().min(32),
   PORT: z.coerce.number().default(3001),
   NODE_ENV: z.enum(['development', 'production']).default('development'),

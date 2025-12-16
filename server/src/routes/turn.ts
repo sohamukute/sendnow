@@ -1,22 +1,27 @@
 import { Hono } from 'hono'
-import { logger } from '../lib/logger.ts'
 
 const turn = new Hono()
 
-turn.get('/', async (c) => {
-  const apiKey = process.env['METERED_API_KEY']!
-  const domain = process.env['METERED_DOMAIN']!
+// Free STUN/TURN servers — no API key required
+// TURN from Open Relay Project (free, public)
+const ICE_SERVERS = [
+  { urls: 'stun:stun.l.google.com:19302' },
+  { urls: 'stun:stun1.l.google.com:19302' },
+  { urls: 'stun:stun2.l.google.com:19302' },
+  {
+    urls: ['turn:a.relay.metered.ca:80', 'turn:a.relay.metered.ca:443', 'turns:a.relay.metered.ca:443'],
+    username: 'openrelayproject',
+    credential: 'openrelayproject',
+  },
+  {
+    urls: 'turn:openrelay.metered.ca:80',
+    username: 'openrelayproject',
+    credential: 'openrelayproject',
+  },
+]
 
-  try {
-    const res = await fetch(`https://${domain}/api/v1/turn/credentials?apiKey=${apiKey}`)
-    if (!res.ok) throw new Error(`Metered returned ${res.status}`)
-    const iceServers = await res.json()
-    return c.json([{ urls: 'stun:stun.l.google.com:19302' }, ...(iceServers as unknown[])])
-  } catch (err) {
-    logger.error('turn', 'fetch credentials failed', { error: String(err) })
-    // Fallback: return only Google STUN
-    return c.json([{ urls: 'stun:stun.l.google.com:19302' }])
-  }
+turn.get('/', (c) => {
+  return c.json(ICE_SERVERS)
 })
 
 export default turn

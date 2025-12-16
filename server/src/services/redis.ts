@@ -1,10 +1,11 @@
 import { Redis } from '@upstash/redis'
-import { logger } from '../lib/logger.ts'
 
-const url = process.env['UPSTASH_REDIS_REST_URL']!
-const token = process.env['UPSTASH_REDIS_REST_TOKEN']!
+export const redis = new Redis({
+  url: process.env['UPSTASH_REDIS_REST_URL']!,
+  token: process.env['UPSTASH_REDIS_REST_TOKEN']!,
+})
 
-export const redis = new Redis({ url, token })
+// ─── Peer metadata ────────────────────────────────────────────────────────
 
 export async function setPeerMeta(peerId: string, meta: Record<string, string>, ttl = 300): Promise<void> {
   await redis.hset(`peer:${peerId}:meta`, meta)
@@ -18,6 +19,12 @@ export async function getPeerMeta(peerId: string): Promise<Record<string, string
 export async function deletePeerMeta(peerId: string): Promise<void> {
   await redis.del(`peer:${peerId}:meta`)
 }
+
+export async function refreshPeerTTL(peerId: string): Promise<void> {
+  await redis.expire(`peer:${peerId}:meta`, 300)
+}
+
+// ─── LAN subnet ──────────────────────────────────────────────────────────
 
 export async function addPeerToSubnet(subnet: string, peerId: string): Promise<void> {
   await redis.sadd(`lan:${subnet}`, peerId)
@@ -36,10 +43,11 @@ export async function refreshSubnetTTL(subnet: string): Promise<void> {
   await redis.expire(`lan:${subnet}`, 120)
 }
 
+// ─── Rooms ────────────────────────────────────────────────────────────────
+
 export async function createRoom(code: string, hostId: string, type: 'p2p' | 'broadcast' = 'p2p'): Promise<void> {
-  await redis.hset(`room:${code}`, { hostId, created: Date.now().toString(), type })
+  await redis.hset(`room:${code}`, { hostId, created: String(Date.now()), type })
   await redis.expire(`room:${code}`, 1800)
-  await redis.expire(`room:${code}:peers`, 1800)
 }
 
 export async function roomExists(code: string): Promise<boolean> {
@@ -61,12 +69,4 @@ export async function getRoomPeerCount(code: string): Promise<number> {
 
 export async function getRoomPeers(code: string): Promise<string[]> {
   return redis.smembers(`room:${code}:peers`) as Promise<string[]>
-}
-
-export async function refreshPeerTTL(peerId: string): Promise<void> {
-  try {
-    await redis.expire(`peer:${peerId}:meta`, 300)
-  } catch (err) {
-    logger.warn('redis', 'refreshPeerTTL failed', { peerId, error: String(err) })
-  }
 }
