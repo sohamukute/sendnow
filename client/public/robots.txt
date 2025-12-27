@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://sendnowp2p.vercel.app/sitemap.xml

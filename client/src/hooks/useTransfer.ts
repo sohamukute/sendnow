@@ -6,8 +6,8 @@ import { useStore } from '../store/index.ts'
 import { isURL } from '../lib/deviceInfo.ts'
 
 const MAX_FILE_SIZE = 100 * 1024 * 1024 // 100MB
-const BUFFER_HIGH = 16 * 1024 * 1024     // 16MB
-const BUFFER_LOW = 4 * 1024 * 1024       // 4MB
+const BUFFER_HIGH = 64 * 1024 * 1024    // 64MB — more in-flight data for speed
+const BUFFER_LOW = 16 * 1024 * 1024     // 16MB
 
 export interface TransferControls {
   sendFile: (peerId: string, file: File) => void

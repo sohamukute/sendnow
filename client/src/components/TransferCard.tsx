@@ -1,7 +1,8 @@
 import { motion, AnimatePresence } from 'framer-motion'
-import { X, CheckCircle, AlertCircle, RotateCcw } from 'lucide-react'
+import { X, CheckCircle, AlertCircle, RotateCcw, XCircle, Ban, ArrowRight, ArrowLeft } from 'lucide-react'
 import type { Transfer } from '../lib/types.ts'
-import { formatBytes, formatSpeed, formatETA, getMimeIcon } from '../lib/deviceInfo.ts'
+import { formatBytes, formatSpeed, formatETA } from '../lib/deviceInfo.ts'
+import { FileTypeIcon } from './FileTypeIcon.tsx'
 
 interface Props {
   transfer: Transfer
@@ -10,7 +11,7 @@ interface Props {
 }
 
 export function TransferCard({ transfer, onCancel, onRetry }: Props) {
-  const { id, filename, size, progress, speed, eta, status, direction, type, peerName, peerEmoji, content } = transfer
+  const { id, filename, size, progress, speed, eta, status, direction, type, peerName, content } = transfer
 
   const isComplete = status === 'complete'
   const isError = status === 'error'
@@ -28,21 +29,29 @@ export function TransferCard({ transfer, onCancel, onRetry }: Props) {
         className="bg-card border border-border rounded-xl p-4 shadow-sm"
       >
         <div className="flex items-start gap-3">
-          {/* Icon */}
-          <div className="text-2xl flex-shrink-0 mt-0.5">
-            {isComplete ? '✅' : isError ? '❌' : isCancelled ? '⛔' : getMimeIcon(transfer.mimeType)}
+          <div className="flex-shrink-0 mt-0.5">
+            {isComplete
+              ? <CheckCircle className="w-6 h-6 text-green-500" />
+              : isError
+                ? <XCircle className="w-6 h-6 text-destructive" />
+                : isCancelled
+                  ? <Ban className="w-6 h-6 text-muted-foreground" />
+                  : <FileTypeIcon mimeType={transfer.mimeType} className="w-6 h-6 text-muted-foreground" />
+            }
           </div>
 
           <div className="flex-1 min-w-0">
-            {/* Header */}
             <div className="flex items-center justify-between gap-2">
               <div className="min-w-0">
                 <p className="text-sm font-medium text-foreground truncate">
                   {type === 'text' ? 'Note' : type === 'link' ? 'Link' : filename}
                 </p>
-                <p className="text-xs text-muted-foreground">
-                  {direction === 'send' ? `→ ${peerEmoji} ${peerName}` : `← ${peerEmoji} ${peerName}`}
-                  {size > 0 && ` · ${formatBytes(size)}`}
+                <p className="text-xs text-muted-foreground flex items-center gap-1">
+                  {direction === 'send'
+                    ? <><ArrowRight className="w-3 h-3 inline" /> {peerName}</>
+                    : <><ArrowLeft className="w-3 h-3 inline" /> {peerName}</>
+                  }
+                  {size > 0 && <span>· {formatBytes(size)}</span>}
                 </p>
               </div>
 
@@ -54,16 +63,6 @@ export function TransferCard({ transfer, onCancel, onRetry }: Props) {
                 >
                   <X className="w-4 h-4" />
                 </button>
-              )}
-
-              {isComplete && (
-                <motion.div
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ type: 'spring', stiffness: 500, damping: 25 }}
-                >
-                  <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
-                </motion.div>
               )}
 
               {isError && (
@@ -82,7 +81,6 @@ export function TransferCard({ transfer, onCancel, onRetry }: Props) {
               )}
             </div>
 
-            {/* Content preview for text/link */}
             {(type === 'text' || type === 'link') && content && (
               <div className="mt-2 p-2 rounded-lg bg-muted text-xs text-foreground max-h-20 overflow-hidden">
                 {type === 'link' ? (
@@ -95,7 +93,6 @@ export function TransferCard({ transfer, onCancel, onRetry }: Props) {
               </div>
             )}
 
-            {/* Progress bar */}
             {type === 'file' && (
               <div className="mt-3">
                 <div className="h-1.5 bg-muted rounded-full overflow-hidden">
@@ -117,14 +114,8 @@ export function TransferCard({ transfer, onCancel, onRetry }: Props) {
                   </div>
                 )}
 
-                {isComplete && (
-                  <p className="text-xs text-green-600 mt-1 font-medium">Transfer complete</p>
-                )}
-
-                {isError && (
-                  <p className="text-xs text-destructive mt-1">Transfer failed</p>
-                )}
-
+                {isComplete && <p className="text-xs text-green-600 mt-1 font-medium">Transfer complete</p>}
+                {isError && <p className="text-xs text-destructive mt-1">Transfer failed</p>}
                 {isCancelled && (
                   <p className="text-xs text-muted-foreground mt-1">
                     {status === 'declined' ? 'Declined by recipient' : 'Cancelled'}

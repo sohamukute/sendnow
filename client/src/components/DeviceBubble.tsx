@@ -1,5 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import type { Peer } from '../lib/types.ts'
+import { DeviceIcon } from './DeviceIcon.tsx'
 
 interface Props {
   peer: Peer
@@ -13,60 +14,73 @@ export function DeviceBubble({ peer, selected, sending, onClick }: Props) {
     <AnimatePresence>
       <motion.button
         key={peer.peerId}
-        initial={{ opacity: 0, y: 40, scale: 0.8 }}
-        animate={{ opacity: peer.connected ? 1 : 0.4, y: 0, scale: 1 }}
+        initial={{ opacity: 0, y: 30, scale: 0.85 }}
+        animate={{ opacity: peer.connected ? 1 : 0.45, y: 0, scale: 1 }}
         exit={{ opacity: 0, y: 20, scale: 0.9 }}
-        transition={{ type: 'spring', stiffness: 300, damping: 24 }}
-        whileHover={peer.connected ? { scale: 1.05 } : {}}
+        transition={{ type: 'spring', stiffness: 280, damping: 22 }}
+        whileHover={peer.connected ? { scale: 1.04, y: -2 } : {}}
+        whileTap={peer.connected ? { scale: 0.97 } : {}}
         onClick={onClick}
         disabled={!peer.connected}
-        className="relative flex flex-col items-center gap-2 focus:outline-none group"
+        className="relative flex flex-col items-center gap-2.5 focus:outline-none group"
         aria-label={`Send to ${peer.deviceName}`}
       >
-        {/* Sending pulse ring */}
+        {/* Sending pulse */}
         {sending && (
-          <motion.div
-            className="absolute inset-0 rounded-full border-2 border-primary"
-            animate={{ scale: [1, 1.3, 1], opacity: [0.8, 0, 0.8] }}
-            transition={{ duration: 1.5, repeat: Infinity }}
-          />
+          <>
+            <motion.div
+              className="absolute inset-0 rounded-full border-2 border-primary"
+              animate={{ scale: [1, 1.35, 1], opacity: [0.9, 0, 0.9] }}
+              transition={{ duration: 1.4, repeat: Infinity }}
+            />
+            <motion.div
+              className="absolute inset-0 rounded-full border border-primary/50"
+              animate={{ scale: [1, 1.6, 1], opacity: [0.5, 0, 0.5] }}
+              transition={{ duration: 1.4, repeat: Infinity, delay: 0.3 }}
+            />
+          </>
         )}
 
-        {/* Selected ring */}
+        {/* Selection ring */}
         {selected && !sending && (
           <motion.div
             layoutId="selection-ring"
-            className="absolute inset-[-4px] rounded-full border-2 border-primary"
-            transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+            className="absolute inset-[-5px] rounded-full border-2 border-primary"
+            transition={{ type: 'spring', stiffness: 380, damping: 28 }}
           />
         )}
 
         {/* Bubble */}
         <div
           className={`
-            relative w-[120px] h-[120px] max-sm:w-[80px] max-sm:h-[80px] rounded-full
-            bg-secondary flex items-center justify-center
-            transition-shadow duration-200
-            ${selected ? 'shadow-lg' : 'shadow-sm'}
-            ${peer.connected ? 'group-hover:shadow-md' : ''}
+            relative w-[100px] h-[100px] sm:w-[110px] sm:h-[110px] rounded-full flex items-center justify-center
+            transition-all duration-200
+            ${selected
+              ? 'bg-primary/10 border-2 border-primary/30'
+              : 'bg-secondary border border-border group-hover:border-primary/30 group-hover:bg-secondary/80'
+            }
           `}
-          style={selected || sending ? { boxShadow: `0 0 0 3px var(--shadow-color)` } : undefined}
+          style={selected || sending
+            ? { boxShadow: `0 0 0 4px var(--shadow-color, var(--primary)) / 0.15, 0 8px 24px oklch(0.58 0.22 215 / 0.20)` }
+            : undefined
+          }
         >
-          <span className="text-[2rem] max-sm:text-[1.4rem] select-none" aria-hidden>
-            {peer.deviceEmoji}
-          </span>
+          <DeviceIcon
+            type={peer.deviceType}
+            className={`w-9 h-9 sm:w-10 sm:h-10 transition-colors ${selected ? 'text-primary' : 'text-muted-foreground group-hover:text-primary/80'}`}
+          />
 
-          {/* Device type badge */}
-          <span className="absolute bottom-1 right-1 text-[0.6rem] bg-background rounded-full px-1 py-0.5 shadow-sm select-none">
-            {getOSIcon(peer.deviceType)}
-          </span>
+          {/* Online indicator */}
+          {peer.connected && (
+            <span className="absolute bottom-2 right-2 w-2.5 h-2.5 rounded-full bg-emerald-500 border-2 border-card" />
+          )}
         </div>
 
-        {/* Device name */}
+        {/* Name */}
         <span
           className={`
-            text-xs font-medium text-center max-w-[120px] max-sm:max-w-[80px] truncate
-            ${!peer.connected ? 'line-through text-muted-foreground' : 'text-foreground'}
+            text-xs font-medium text-center max-w-[110px] truncate leading-tight
+            ${!peer.connected ? 'line-through text-muted-foreground' : selected ? 'text-primary' : 'text-foreground'}
           `}
         >
           {peer.deviceName}
@@ -74,9 +88,4 @@ export function DeviceBubble({ peer, selected, sending, onClick }: Props) {
       </motion.button>
     </AnimatePresence>
   )
-}
-
-function getOSIcon(deviceType: string): string {
-  const map: Record<string, string> = { mobile: '📱', tablet: '📟', laptop: '💻', desktop: '🖥️' }
-  return map[deviceType] ?? '💻'
 }

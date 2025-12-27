@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
+import { User } from 'lucide-react'
 import type { Transfer } from '../lib/types.ts'
 import { formatBytes } from '../lib/deviceInfo.ts'
 
@@ -27,7 +28,7 @@ export function ReceiveToast({ transfer, onAccept, onDecline }: Props) {
     return () => clearInterval(interval)
   }, [transfer.id, onDecline])
 
-  const circumference = 2 * Math.PI * 10 // r=10
+  const circumference = 2 * Math.PI * 10
   const dashOffset = circumference * (1 - secondsLeft / TIMEOUT_SECS)
 
   return (
@@ -39,7 +40,9 @@ export function ReceiveToast({ transfer, onAccept, onDecline }: Props) {
       className="bg-card border border-border rounded-xl shadow-lg p-4 w-72 flex flex-col gap-3"
     >
       <div className="flex items-start gap-3">
-        <span className="text-xl flex-shrink-0">{transfer.peerEmoji}</span>
+        <div className="flex-shrink-0 w-8 h-8 rounded-full bg-secondary flex items-center justify-center">
+          <User className="w-4 h-4 text-primary" />
+        </div>
         <div className="flex-1 min-w-0">
           <p className="text-sm text-foreground leading-snug">
             <span className="font-medium">{transfer.peerName}</span> wants to send{' '}
@@ -50,7 +53,6 @@ export function ReceiveToast({ transfer, onAccept, onDecline }: Props) {
           )}
         </div>
 
-        {/* Countdown ring */}
         <div className="flex-shrink-0 relative w-7 h-7">
           <svg className="w-7 h-7 -rotate-90" viewBox="0 0 24 24">
             <circle cx="12" cy="12" r="10" fill="none" stroke="var(--border)" strokeWidth="2" />

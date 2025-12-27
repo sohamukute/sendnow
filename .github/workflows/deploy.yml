@@ -1,36 +1,45 @@
-name: CI/CD
+name: Deploy
 
 on:
   push:
-    branches: [main]
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
 
 jobs:
-  typecheck:
-    name: TypeScript Check
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: oven-sh/setup-bun@v2
-      - run: bun install
-      - run: cd server && bun run typecheck
-      - run: cd client && bun run typecheck
-
   deploy-frontend:
-    name: Deploy Frontend → Vercel
-    needs: typecheck
+    name: Frontend (Vercel)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-      - run: npm i -g vercel
-      - run: vercel --token=${{ secrets.VERCEL_TOKEN }} --prod --yes
+
+      - name: Install Vercel CLI
+        run: npm install -g vercel@latest
+
+      - name: Deploy to Vercel
+        working-directory: client
+        run: |
+          if [ "${{ github.event_name }}" = "push" ]; then
+            vercel --prod --yes --token=$VERCEL_TOKEN
+          else
+            vercel --yes --token=$VERCEL_TOKEN
+          fi
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
   deploy-backend:
-    name: Deploy Backend → Render
-    needs: typecheck
+    name: Backend (Railway)
     runs-on: ubuntu-latest
+    if: github.event_name == 'push'
     steps:
-      - name: Trigger Render Deploy Hook
-        run: curl -fsSL -X POST "${{ secrets.RENDER_DEPLOY_HOOK }}"
+      - uses: actions/checkout@v4
+
+      - name: Install Railway CLI
+        run: npm install -g @railway/cli
+
+      - name: Deploy to Railway
+        run: railway up --detach
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}

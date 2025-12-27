@@ -3,11 +3,54 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SendNow ⚡</title>
-    <meta name="description" content="Instant P2P file, text & link sharing — any device, any browser, zero login." />
+
+    <!-- Primary SEO -->
+    <title>SendNow — Free Instant File Transfer Between Devices | No Login</title>
+    <meta name="description" content="Send files, photos, videos and text instantly between any devices on the same WiFi. No login, no cloud upload, no app install. Free P2P file sharing — works like AirDrop for everyone." />
+    <meta name="keywords" content="send files between devices, p2p file sharing, airdrop alternative android, wireless file transfer, share files no login, browser file sharing, send large files free, share files same network, file transfer online" />
+    <link rel="canonical" href="https://sendnowp2p.vercel.app/" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://sendnowp2p.vercel.app/" />
+    <meta property="og:title" content="SendNow — Send Files Instantly, No Login Required" />
+    <meta property="og:description" content="Free P2P file sharing between any devices. Like AirDrop but for everyone — works on iPhone, Android, Windows, Mac and Linux in any browser." />
+    <meta property="og:site_name" content="SendNow" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="SendNow — Send Files Instantly, No Login" />
+    <meta name="twitter:description" content="Free P2P file sharing between any devices. Like AirDrop but for everyone." />
+
+    <!-- Technical -->
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f5f7ff" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0a0d16" />
+    <meta name="robots" content="index, follow" />
+    <meta name="author" content="SendNow" />
+
+    <!-- Dark mode flash prevention — runs before first paint -->
+    <script>try{var t=localStorage.getItem('sendnow:theme');if(t==='dark'||(t===null&&matchMedia('(prefers-color-scheme: dark)').matches))document.documentElement.classList.add('dark')}catch(e){}</script>
+
+    <!-- Structured data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "SendNow",
+      "url": "https://sendnowp2p.vercel.app",
+      "description": "Free instant P2P file transfer between any devices. No login, no cloud upload. Works like AirDrop for any browser.",
+      "applicationCategory": "UtilitiesApplication",
+      "operatingSystem": "Any",
+      "browserRequirements": "Requires a modern browser with WebRTC support",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+      "featureList": ["No login required","Peer-to-peer file transfer","Works on all devices","Share files, text and links","Up to 100MB per file","No cloud storage"]
+    }
+    </script>
+
+    <!-- Fonts: Outfit (UI) + JetBrains Mono (codes) -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
   </head>
   <body>
     <div id="root"></div>

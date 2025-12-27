@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion'
-import { Download, Clock } from 'lucide-react'
+import { Download, Clock, FileText, Link, ArrowDownToLine, ArrowUpFromLine } from 'lucide-react'
 import type { HistoryEntry } from '../lib/types.ts'
 import { formatBytes } from '../lib/deviceInfo.ts'
 
@@ -28,9 +28,16 @@ export function SessionHistory({ history }: Props) {
               transition={{ duration: 0.2 }}
               className="flex items-center gap-3 p-3 bg-muted/40 rounded-lg hover:bg-muted/60 transition-colors"
             >
-              <span className="text-lg flex-shrink-0">
-                {entry.type === 'text' ? '📝' : entry.type === 'link' ? '🔗' : entry.direction === 'receive' ? '⬇️' : '⬆️'}
-              </span>
+              <div className="flex-shrink-0 text-muted-foreground">
+                {entry.type === 'text'
+                  ? <FileText className="w-4 h-4" />
+                  : entry.type === 'link'
+                    ? <Link className="w-4 h-4" />
+                    : entry.direction === 'receive'
+                      ? <ArrowDownToLine className="w-4 h-4 text-primary" />
+                      : <ArrowUpFromLine className="w-4 h-4 text-primary" />
+                }
+              </div>
 
               <div className="flex-1 min-w-0">
                 <p className="text-xs font-medium text-foreground truncate">{entry.filename}</p>

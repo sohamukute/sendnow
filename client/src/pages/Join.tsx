@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { Loader2 } from 'lucide-react'
+import { Loader2, SearchX } from 'lucide-react'
 import { Home } from './Home.tsx'
+import { apiUrl } from '../lib/api.ts'
 
 export function Join() {
   const { code } = useParams<{ code: string }>()
@@ -15,7 +16,7 @@ export function Join() {
     const ctrl = new AbortController()
     setStatus('checking')
 
-    fetch(`/api/room/${code.toUpperCase()}`, { signal: ctrl.signal })
+    fetch(apiUrl(`/api/room/${code.toUpperCase()}`), { signal: ctrl.signal })
       .then(r => r.json())
       .then((data: { exists: boolean }) => {
         if (!data.exists) {
@@ -54,7 +55,9 @@ export function Join() {
           animate={{ opacity: 1, y: 0 }}
           className="flex flex-col items-center gap-4 text-center"
         >
-          <span className="text-5xl">🔍</span>
+          <div className="w-16 h-16 rounded-2xl bg-muted flex items-center justify-center">
+            <SearchX className="w-7 h-7 text-muted-foreground" />
+          </div>
           <h1 className="text-lg font-semibold text-foreground">Room not found</h1>
           <p className="text-sm text-muted-foreground">
             Room <span className="font-mono font-bold text-primary">{code?.toUpperCase()}</span> has expired or doesn't exist.
