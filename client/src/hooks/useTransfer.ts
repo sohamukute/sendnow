@@ -1,13 +1,12 @@
 import { useRef, useCallback } from 'react'
 import type { Transfer, TransferMetadata, DataChannelControl, DataChannelMessage } from '../lib/types.ts'
-import { createChunkIterator, extractChunkData } from '../lib/chunker.ts'
+import { createChunkIterator, extractChunkData, CHUNK_SIZE } from '../lib/chunker.ts'
 import { Reassembler } from '../lib/reassembler.ts'
 import { useStore } from '../store/index.ts'
 import { isURL } from '../lib/deviceInfo.ts'
 
-const MAX_FILE_SIZE = 100 * 1024 * 1024 // 100MB
-const BUFFER_HIGH = 64 * 1024 * 1024    // 64MB — more in-flight data for speed
-const BUFFER_LOW = 16 * 1024 * 1024     // 16MB
+const BUFFER_HIGH = 4 * 1024 * 1024
+const BUFFER_LOW = 512 * 1024
 
 export interface TransferControls {
   sendFile: (peerId: string, file: File) => void
@@ -26,8 +25,8 @@ export function useTransfer(
 ): TransferControls {
   const { addTransfer, updateTransfer, removeTransfer, addHistoryEntry } = useStore()
   const reassemblers = useRef<Map<string, Reassembler>>(new Map())
-  const activeDCs = useRef<Map<string, RTCDataChannel>>(new Map()) // peerId → DC
-  const pendingSends = useRef<Map<string, (accepted: boolean) => void>>(new Map()) // transferId → resolver
+  const activeDCs = useRef<Map<string, RTCDataChannel>>(new Map())
+  const pendingSends = useRef<Map<string, (accepted: boolean) => void>>(new Map())
   const speedWindows = useRef<Map<string, { totalBytes: number; startTime: number }>>(new Map())
 
   const trackSpeed = useCallback((transferId: string, bytes: number): number => {
@@ -66,11 +65,18 @@ export function useTransfer(
     for await (const { buffer } of createChunkIterator(file)) {
       if (dc.readyState !== 'open') { updateTransfer(transferId, { status: 'error' }); return }
 
-      // Backpressure
       if (dc.bufferedAmount > BUFFER_HIGH) {
-        await new Promise<void>((res) => {
-          const poll = () => dc.bufferedAmount <= BUFFER_LOW ? res() : setTimeout(poll, 50)
-          poll()
+        await new Promise<void>((res, rej) => {
+          if (dc.readyState !== 'open') { rej(new Error('closed')); return }
+          let done = false
+          const finish = () => { if (done) return; done = true; clearInterval(poll); dc.onbufferedamountlow = null; res() }
+          const fail = () => { if (done) return; done = true; clearInterval(poll); dc.onbufferedamountlow = null; rej(new Error('closed')) }
+          dc.onbufferedamountlow = finish
+          const poll = setInterval(() => {
+            if (dc.readyState !== 'open') { fail(); return }
+            if (dc.bufferedAmount <= BUFFER_LOW) finish()
+          }, 50)
+          if (dc.bufferedAmount <= BUFFER_LOW) finish()
         })
       }
 
@@ -84,13 +90,12 @@ export function useTransfer(
   }, [updateTransfer, trackSpeed])
 
   const sendFile = useCallback((peerId: string, file: File): void => {
-    if (file.size > MAX_FILE_SIZE) { toastError(`"${file.name}" exceeds 100MB limit`); return }
 
     const dc = activeDCs.current.get(peerId)
     if (!dc || dc.readyState !== 'open') { toastError('Not connected to that device'); return }
 
     const transferId = crypto.randomUUID()
-    const totalChunks = Math.ceil(file.size / (64 * 1024))
+    const totalChunks = Math.ceil(file.size / CHUNK_SIZE)
     const peers = useStore.getState().peers
     const peer = peers.get(peerId)
 
@@ -204,6 +209,8 @@ export function useTransfer(
   }, [updateTransfer, removeTransfer])
 
   const handleDataChannel = useCallback((peerId: string, dc: RTCDataChannel): void => {
+    dc.binaryType = 'arraybuffer'
+    dc.bufferedAmountLowThreshold = BUFFER_LOW
     activeDCs.current.set(peerId, dc)
 
     dc.onmessage = (event: MessageEvent<string | ArrayBuffer>) => {

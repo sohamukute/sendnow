@@ -16,22 +16,27 @@
     <meta property="og:title" content="SendNow — Send Files Instantly, No Login Required" />
     <meta property="og:description" content="Free P2P file sharing between any devices. Like AirDrop but for everyone — works on iPhone, Android, Windows, Mac and Linux in any browser." />
     <meta property="og:site_name" content="SendNow" />
+    <meta property="og:image" content="https://sendnowp2p.vercel.app/og.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="SendNow — Send Files Instantly, No Login" />
     <meta name="twitter:description" content="Free P2P file sharing between any devices. Like AirDrop but for everyone." />
+    <meta name="twitter:image" content="https://sendnowp2p.vercel.app/og.png" />
 
     <!-- Technical -->
     <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f5f7ff" />
     <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0a0d16" />
     <meta name="robots" content="index, follow" />
     <meta name="author" content="SendNow" />
+    <meta name="google-site-verification" content="aQgmDN6DuHMsqiG0zITP6rYykqUrFpnRbtSaFGvCyiY" />
 
     <!-- Dark mode flash prevention — runs before first paint -->
     <script>try{var t=localStorage.getItem('sendnow:theme');if(t==='dark'||(t===null&&matchMedia('(prefers-color-scheme: dark)').matches))document.documentElement.classList.add('dark')}catch(e){}</script>
 
-    <!-- Structured data -->
+    <!-- Structured data: WebApplication -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -43,17 +48,138 @@
       "operatingSystem": "Any",
       "browserRequirements": "Requires a modern browser with WebRTC support",
       "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
-      "featureList": ["No login required","Peer-to-peer file transfer","Works on all devices","Share files, text and links","Up to 100MB per file","No cloud storage"]
+      "featureList": ["No login required","Peer-to-peer file transfer","Works on all devices","Share files, text and links","No file size limit","No cloud storage","End-to-end encrypted"]
     }
     </script>
 
-    <!-- Fonts: Outfit (UI) + JetBrains Mono (codes) -->
+    <!-- Structured data: FAQ -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "How do I send files between devices without an app?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Open SendNow in a browser on both devices connected to the same WiFi network. Your devices appear automatically — click one and drop any file to send it instantly. No app, no login, no signup required."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is SendNow free to use?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes, SendNow is completely free. There are no file size limits, no sign-up, and no ads. Files transfer directly between devices using WebRTC so nothing passes through our servers."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What is the file size limit?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "There is no file size limit. Files transfer directly between your devices over a peer-to-peer connection, so you are only limited by your network speed and available memory."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Does it work between iPhone and Android?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. SendNow works in any modern browser — Chrome, Safari, Firefox — across iPhone, Android, Windows, Mac, and Linux. It is the AirDrop alternative that works across all platforms."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I send files to someone not on my WiFi?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. Use the Invite via link button to generate a room code and share it with anyone. They can join from any network and files will transfer securely through an encrypted relay."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Are my files private?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Your files never touch our servers. They travel peer-to-peer directly from one browser to the other using WebRTC. We have no access to what you send."
+          }
+        }
+      ]
+    }
+    </script>
+
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" />
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" /></noscript>
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+
+    <!-- Static content for search crawlers that don't execute JavaScript -->
+    <noscript>
+      <style>
+        .seo-landing { font-family: sans-serif; max-width: 800px; margin: 0 auto; padding: 40px 20px; color: #111; }
+        .seo-landing h1 { font-size: 2rem; margin-bottom: 1rem; }
+        .seo-landing h2 { font-size: 1.25rem; margin-top: 2rem; margin-bottom: 0.5rem; }
+        .seo-landing ul { padding-left: 1.5rem; }
+        .seo-landing li { margin-bottom: 0.5rem; }
+        .seo-landing p { line-height: 1.6; }
+      </style>
+      <div class="seo-landing">
+        <h1>SendNow — Free Instant File Transfer Between Any Devices</h1>
+        <p>
+          SendNow is a free, browser-based file transfer tool that lets you send files, photos, videos,
+          and text between any devices on the same WiFi network — no login, no app install, no cloud upload.
+          It works like AirDrop but for everyone: iPhone to Android, Windows to Mac, phone to laptop.
+        </p>
+
+        <h2>How to send files without an app</h2>
+        <ol>
+          <li>Open <strong>sendnowp2p.vercel.app</strong> on both devices (same WiFi or mobile hotspot).</li>
+          <li>Your devices appear automatically in the device list.</li>
+          <li>Click a device, then drop a file or paste text to send it instantly.</li>
+        </ol>
+
+        <h2>Features</h2>
+        <ul>
+          <li>No login, no sign-up, no email required</li>
+          <li>No file size limit — limited only by your network</li>
+          <li>Peer-to-peer: files never touch our servers</li>
+          <li>Works on iPhone, Android, Windows, Mac, Linux</li>
+          <li>Send files, photos, videos, links, and notes</li>
+          <li>Share with someone outside your WiFi using a room code</li>
+          <li>AirDrop alternative that works across all platforms</li>
+          <li>Completely free — no ads, no premium tier</li>
+        </ul>
+
+        <h2>Frequently Asked Questions</h2>
+
+        <h3>Is there a file size limit?</h3>
+        <p>No. Files transfer directly between browsers over WebRTC so there is no server limit. You are limited only by your network speed and device memory.</p>
+
+        <h3>Does it work between iPhone and Android?</h3>
+        <p>Yes. Any modern browser works — Chrome, Safari, Firefox. SendNow is the cross-platform AirDrop alternative that works between any devices regardless of operating system.</p>
+
+        <h3>Can I send files to someone not on my WiFi?</h3>
+        <p>Yes. Click "Invite via link" to get a room code. Share it with anyone and they can join from any network. The transfer still goes peer-to-peer through an encrypted relay.</p>
+
+        <h3>Are my files private?</h3>
+        <p>Your files never pass through our servers. They travel directly from one browser to the other using WebRTC encryption. We have zero access to what you send.</p>
+
+        <h3>What can I send?</h3>
+        <p>Any file type — photos, videos, PDFs, zip archives, documents — plus plain text notes and links. Paste text directly into the text box and send it instantly.</p>
+
+        <p>
+          SendNow is open source and free forever. A fast, private alternative to WeTransfer, SendAnywhere,
+          Snapdrop, and Sharedrop for local network file sharing.
+        </p>
+      </div>
+    </noscript>
   </body>
 </html>

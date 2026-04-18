@@ -2,9 +2,7 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* ── Tokens ──────────────────────────────────────────────────────────── */
 :root {
-  /* Blue-slate light palette */
   --background:         oklch(0.985 0.003 240);
   --foreground:         oklch(0.140 0.018 240);
   --card:               oklch(1.000 0.000 0);
@@ -33,7 +31,6 @@
 }
 
 .dark {
-  /* Deep blue-slate dark palette — zero red tint */
   --background:         oklch(0.088 0.014 240);
   --foreground:         oklch(0.960 0.006 240);
   --card:               oklch(0.128 0.016 240);
@@ -60,7 +57,6 @@
   --shadow-lg:   0 16px 40px 0 oklch(0 0 0 / 0.60), 0 8px 16px -4px oklch(0 0 0 / 0.40);
 }
 
-/* ── Tailwind theme bridge ───────────────────────────────────────────── */
 @theme inline {
   --color-background:         var(--background);
   --color-foreground:         var(--foreground);
@@ -91,7 +87,6 @@
   --font-mono:  'JetBrains Mono', monospace;
 }
 
-/* ── Base ────────────────────────────────────────────────────────────── */
 @layer base {
   * { @apply border-border outline-ring/50; }
 
@@ -102,7 +97,6 @@
     letter-spacing: -0.01em;
   }
 
-  /* Dot-grid texture in dark mode */
   .dark body {
     background-image:
       radial-gradient(ellipse 90% 60% at 10% -10%, oklch(0.25 0.06 215 / 0.25) 0%, transparent 60%),
@@ -111,7 +105,6 @@
     background-size: auto, auto, 28px 28px;
   }
 
-  /* Scrollbar */
   ::-webkit-scrollbar { width: 6px; }
   ::-webkit-scrollbar-track { @apply bg-transparent; }
   ::-webkit-scrollbar-thumb { @apply bg-border rounded-full; }

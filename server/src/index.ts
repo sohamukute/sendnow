@@ -23,8 +23,10 @@ const env = envResult.data
 
 const app = new Hono()
 
+const allowedOrigin = env.CLIENT_URL ?? (env.NODE_ENV === 'production' ? 'https://sendnowp2p.vercel.app' : 'http://localhost:5173')
+
 app.use('*', cors({
-  origin: env.CLIENT_URL ?? '*',
+  origin: allowedOrigin,
   allowMethods: ['GET', 'POST', 'OPTIONS'],
   allowHeaders: ['Content-Type'],
 }))
@@ -65,7 +67,10 @@ export default {
 
     return app.fetch(req) as Response
   },
-  websocket: websocketHandlers,
+  websocket: {
+    ...websocketHandlers,
+    maxPayloadLength: 64 * 1024,
+  },
 }
 
 logger.info('server', 'started', { port: env.PORT, env: env.NODE_ENV })

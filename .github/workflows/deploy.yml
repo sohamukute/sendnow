@@ -20,9 +20,9 @@ jobs:
         working-directory: client
         run: |
           if [ "${{ github.event_name }}" = "push" ]; then
-            vercel --prod --yes --token=$VERCEL_TOKEN
+            vercel --prod --yes --token "$VERCEL_TOKEN"
           else
-            vercel --yes --token=$VERCEL_TOKEN
+            vercel --yes --token "$VERCEL_TOKEN"
           fi
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
@@ -34,12 +34,10 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'push'
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Install Railway CLI
-        run: npm install -g @railway/cli
-
-      - name: Deploy to Railway
-        run: railway up --detach
-        env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+      - name: Redeploy on Railway
+        run: |
+          curl -sf -X POST \
+            -H "Authorization: Bearer ${{ secrets.RAILWAY_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d '{"query":"mutation { serviceInstanceRedeploy(serviceId: \"a230bb7b-1a57-429a-a5d9-31177b3791bc\", environmentId: \"f0913629-e62c-4023-8d15-fd90e2cc0cf0\") }"}' \
+            https://backboard.railway.app/graphql/v2

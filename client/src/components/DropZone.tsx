@@ -89,7 +89,7 @@ export function DropZone({ selectedPeerId, selectedPeerName, onFiles, onText, on
             <p className="text-sm font-medium text-foreground">
               Drop files for <span className="text-primary font-semibold">{selectedPeerName}</span>
             </p>
-            <p className="text-xs text-muted-foreground mt-1">or click to browse · max 100 MB per file</p>
+            <p className="text-xs text-muted-foreground mt-1">or click to browse · any size</p>
           </div>
         ) : (
           <div>

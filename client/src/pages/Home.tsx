@@ -157,7 +157,7 @@ export function Home({ initialRoomCode }: { initialRoomCode?: string }) {
           <div className="w-7 h-7 rounded-lg bg-primary flex items-center justify-center shadow-sm">
             <Zap className="w-4 h-4 text-primary-foreground" strokeWidth={2.5} />
           </div>
-          <span className="text-lg font-semibold tracking-tight text-foreground">SendNow</span>
+          <h1 className="text-lg font-semibold tracking-tight text-foreground m-0">SendNow</h1>
         </div>
 
         <div className="flex items-center gap-2 sm:gap-3">
@@ -210,6 +210,11 @@ export function Home({ initialRoomCode }: { initialRoomCode?: string }) {
 
       {/* ── Main ───────────────────────────────────────────────────── */}
       <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10">
+        <p className="sr-only">
+          Free peer-to-peer file transfer between any devices on the same WiFi. No login, no app install,
+          no file size limit. Send files from iPhone to Android, Windows to Mac, or any browser to any browser.
+          AirDrop alternative that works everywhere.
+        </p>
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.1fr] gap-6 lg:gap-10 items-start">
 
           {/* ── Left: Devices + Join ─────────────────────────────── */}

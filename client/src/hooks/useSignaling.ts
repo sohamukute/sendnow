@@ -3,12 +3,9 @@ import type { SignalMessage, DeviceInfo } from '../lib/types.ts'
 import { useStore } from '../store/index.ts'
 
 function getWSUrl(): string {
-  const serverUrl = import.meta.env['VITE_SERVER_URL'] as string | undefined
-  if (serverUrl) {
-    return serverUrl.replace(/^http/, 'ws') + '/ws'
-  }
-  const proto = window.location.protocol === 'https:' ? 'wss' : 'ws'
-  return `${proto}://${window.location.host}/ws`
+  const serverUrl = (import.meta.env['VITE_SERVER_URL'] as string | undefined)
+    ?? 'https://powerful-vision-production-a354.up.railway.app'
+  return serverUrl.replace(/^http/, 'ws') + '/ws'
 }
 
 type MessageHandler = (msg: SignalMessage) => void

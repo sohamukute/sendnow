@@ -5,8 +5,6 @@ export const redis = new Redis({
   token: process.env['UPSTASH_REDIS_REST_TOKEN']!,
 })
 
-// ─── Peer metadata ────────────────────────────────────────────────────────
-
 export async function setPeerMeta(peerId: string, meta: Record<string, string>, ttl = 300): Promise<void> {
   await redis.hset(`peer:${peerId}:meta`, meta)
   await redis.expire(`peer:${peerId}:meta`, ttl)
@@ -24,8 +22,6 @@ export async function refreshPeerTTL(peerId: string): Promise<void> {
   await redis.expire(`peer:${peerId}:meta`, 300)
 }
 
-// ─── LAN subnet ──────────────────────────────────────────────────────────
-
 export async function addPeerToSubnet(subnet: string, peerId: string): Promise<void> {
   await redis.sadd(`lan:${subnet}`, peerId)
   await redis.expire(`lan:${subnet}`, 120)
@@ -42,8 +38,6 @@ export async function getSubnetPeers(subnet: string): Promise<string[]> {
 export async function refreshSubnetTTL(subnet: string): Promise<void> {
   await redis.expire(`lan:${subnet}`, 120)
 }
-
-// ─── Rooms ────────────────────────────────────────────────────────────────
 
 export async function createRoom(code: string, hostId: string, type: 'p2p' | 'broadcast' = 'p2p'): Promise<void> {
   await redis.hset(`room:${code}`, { hostId, created: String(Date.now()), type })

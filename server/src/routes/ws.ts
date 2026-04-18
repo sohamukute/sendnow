@@ -41,6 +41,10 @@ export const websocketHandlers = {
     switch (msg.type) {
       case 'join': {
         const { peerId, roomCode, deviceName, deviceEmoji, deviceType } = msg
+        if (ws.data.peerId) {
+          sendToWS(ws, { type: 'error', message: 'Already joined' })
+          return
+        }
         const ip = getClientIP(ws)
         const subnet = extractSubnet(ip)
 
@@ -58,7 +62,6 @@ export const websocketHandlers = {
           await joinRoom(roomCode, peerId)
         }
 
-        // Notify new peer about all existing peers
         for (const existing of existingPeers) {
           sendToWS(ws, {
             type: 'peer_joined',
@@ -69,7 +72,6 @@ export const websocketHandlers = {
           })
         }
 
-        // Notify existing peers about new peer
         const peerSet = roomCode
           ? (roomToPeers.get(roomCode) ?? new Set<string>())
           : (subnetToPeers.get(subnet) ?? new Set<string>())
@@ -91,7 +93,7 @@ export const websocketHandlers = {
       case 'ice': {
         const target = peerToWS.get(msg.to)
         if (target) {
-          sendToWS(target, msg)
+          sendToWS(target, { ...msg, from: ws.data.peerId })
         } else {
           sendToWS(ws, { type: 'error', message: `Peer ${msg.to} not found` })
         }
@@ -115,7 +117,6 @@ export const websocketHandlers = {
     const { peerId, subnet } = ws.data
     if (!peerId) return
 
-    // Find which room this peer was in
     let roomCode: string | undefined
     for (const [rc, peers] of roomToPeers) {
       if (peers.has(peerId)) {

@@ -1,8 +1,21 @@
-export const CHUNK_SIZE = 256 * 1024 // 256KB — 4× faster throughput
+export const CHUNK_SIZE = 64 * 1024
 
 export interface ChunkIterator {
   totalChunks: number
   [Symbol.asyncIterator](): AsyncIterator<{ index: number; buffer: ArrayBuffer }>
+}
+
+function readChunk(file: File, index: number, totalChunks: number): Promise<ArrayBuffer> {
+  const start = index * CHUNK_SIZE
+  const buffer = file.slice(start, Math.min(start + CHUNK_SIZE, file.size)).arrayBuffer()
+  return buffer.then(buf => {
+    const tagged = new ArrayBuffer(buf.byteLength + 8)
+    const view = new DataView(tagged)
+    view.setUint32(0, index, false)
+    view.setUint32(4, totalChunks, false)
+    new Uint8Array(tagged, 8).set(new Uint8Array(buf))
+    return tagged
+  })
 }
 
 export function createChunkIterator(file: File): ChunkIterator {
@@ -11,20 +24,11 @@ export function createChunkIterator(file: File): ChunkIterator {
   return {
     totalChunks,
     async *[Symbol.asyncIterator]() {
+      let ahead = readChunk(file, 0, totalChunks)
       for (let i = 0; i < totalChunks; i++) {
-        const start = i * CHUNK_SIZE
-        const end = Math.min(start + CHUNK_SIZE, file.size)
-        const slice = file.slice(start, end)
-        const buffer = await slice.arrayBuffer()
-
-        // Prepend 4-byte chunk index (uint32 big-endian) + 4-byte total (for validation)
-        const tagged = new ArrayBuffer(buffer.byteLength + 8)
-        const view = new DataView(tagged)
-        view.setUint32(0, i, false)
-        view.setUint32(4, totalChunks, false)
-        new Uint8Array(tagged, 8).set(new Uint8Array(buffer))
-
-        yield { index: i, buffer: tagged }
+        const buffer = await ahead
+        if (i + 1 < totalChunks) ahead = readChunk(file, i + 1, totalChunks)
+        yield { index: i, buffer }
       }
     },
   }

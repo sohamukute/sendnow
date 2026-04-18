@@ -1,5 +1,6 @@
 import { useRef, useCallback, useEffect } from 'react'
 import type { SignalMessage } from '../lib/types.ts'
+import { apiUrl } from '../lib/api.ts'
 
 type SendSignalFn = (msg: SignalMessage) => void
 type DataChannelHandler = (peerId: string, dc: RTCDataChannel) => void
@@ -37,7 +38,7 @@ export function useWebRTC(
 
   useEffect(() => {
     const ctrl = new AbortController()
-    fetch('/api/turn-creds', { signal: ctrl.signal })
+    fetch(apiUrl('/api/turn-creds'), { signal: ctrl.signal })
       .then(r => r.json())
       .then((servers: RTCIceServer[]) => { iceServers.current = servers })
       .catch(() => { /* keep STUN-only fallback */ })
@@ -87,6 +88,8 @@ export function useWebRTC(
   const initiateOffer = useCallback(async (peerId: string): Promise<void> => {
     const from = myPeerIdRef.current
     if (!from) return
+    const existingDC = dcs.current.get(peerId)
+    if (existingDC && (existingDC.readyState === 'open' || existingDC.readyState === 'connecting')) return
     const pc = createPC(peerId)
     const dc = pc.createDataChannel('sendnow', { ordered: true })
     dcs.current.set(peerId, dc)

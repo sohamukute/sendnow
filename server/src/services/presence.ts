@@ -11,7 +11,6 @@ export const peerToWS = new Map<string, ServerWebSocket<WSData>>()
 export const subnetToPeers = new Map<string, Set<string>>()
 export const roomToPeers = new Map<string, Set<string>>()
 
-// In-memory peer metadata cache — primary source, Redis is secondary
 const peerMetaCache = new Map<string, PeerMeta>()
 
 export let activeConnections = 0
@@ -32,7 +31,6 @@ export async function registerPeer(
   peerToWS.set(peerId, ws)
   peerMetaCache.set(peerId, meta)
 
-  // Redis — best effort
   setPeerMeta(peerId, { ...meta, room: roomCode || subnet }).catch(() => {})
   addPeerToSubnet(subnet, peerId).catch(() => {})
 
@@ -67,7 +65,6 @@ export async function unregisterPeer(peerId: string, subnet: string, roomCode?: 
     }
   }
 
-  // Redis — best effort
   deletePeerMeta(peerId).catch(() => {})
   removePeerFromSubnet(subnet, peerId).catch(() => {})
 
@@ -85,13 +82,11 @@ export async function getPeersInContext(
 
   const results: Array<{ peerId: string } & PeerMeta> = []
   for (const id of peerIds) {
-    // Primary: in-memory cache (always current for this process)
     const cached = peerMetaCache.get(id)
     if (cached) {
       results.push({ peerId: id, ...cached })
       continue
     }
-    // Fallback: Redis (for multi-instance setups)
     const redisMeta = await getPeerMeta(id).catch(() => null)
     if (redisMeta) {
       results.push({
